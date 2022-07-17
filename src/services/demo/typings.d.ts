@@ -63,6 +63,10 @@ declare namespace API {
     /** email */
     email?: string;
   }
+  interface PageInfoVO {
+    config_key?: string;
+    config_val?: string;
+  }
 
   type definitions_0 = null;
 }

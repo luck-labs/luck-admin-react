@@ -12,26 +12,25 @@ import React, { useRef, useState } from 'react';
 import CreateForm from './components/CreateForm';
 import UpdateForm, { FormValueType } from './components/UpdateForm';
 
-const { addUser, queryUserList, deleteUser, modifyUser } =
-  services.UserController;
+const { queryShortUrlList, deleteUser, modifyUser } = services.UserController;
 
 /**
  * 添加节点
  * @param fields
  */
-const handleAdd = async (fields: API.UserInfo) => {
-  const hide = message.loading('正在添加');
-  try {
-    await addUser({ ...fields });
-    hide();
-    message.success('添加成功');
-    return true;
-  } catch (error) {
-    hide();
-    message.error('添加失败请重试！');
-    return false;
-  }
-};
+// const handleAdd = async (fields: API.UserInfo) => {
+//   const hide = message.loading('正在添加');
+//   try {
+//     await addUser({ ...fields });
+//     hide();
+//     message.success('添加成功');
+//     return true;
+//   } catch (error) {
+//     hide();
+//     message.error('添加失败请重试！');
+//     return false;
+//   }
+// };
 
 /**
  * 更新节点
@@ -92,31 +91,50 @@ const TableList: React.FC<unknown> = () => {
   const [selectedRowsState, setSelectedRows] = useState<API.UserInfo[]>([]);
   const columns: ProDescriptionsItemProps<API.UserInfo>[] = [
     {
-      title: '名称',
-      dataIndex: 'name',
-      tip: '名称是唯一的 key',
-      formItemProps: {
-        rules: [
-          {
-            required: true,
-            message: '名称为必填项',
-          },
-        ],
-      },
+      title: 'ID',
+      hideInForm: true,
+      dataIndex: 'id',
     },
     {
-      title: '昵称',
-      dataIndex: 'nickName',
+      title: '用户ID',
+      dataIndex: 'user_id',
       valueType: 'text',
     },
     {
-      title: '性别',
-      dataIndex: 'gender',
-      hideInForm: true,
+      title: 'HASH值',
+      dataIndex: 'hash_key',
+      valueType: 'text',
+    },
+    {
+      title: '短链',
+      dataIndex: 'short_url',
+      valueType: 'text',
+    },
+    {
+      title: '原始链接',
+      dataIndex: 'original_url',
+      valueType: 'text',
+    },
+    {
+      title: '状态',
+      dataIndex: 'status',
       valueEnum: {
-        0: { text: '男', status: 'MALE' },
-        1: { text: '女', status: 'FEMALE' },
+        1: { text: '正常', status: '1' },
+        0: { text: '失效', status: '0' },
       },
+    },
+    {
+      title: '创建时间',
+      dataIndex: 'create_time',
+      hideInForm: true,
+      valueType: 'text',
+      // render: value => (moment(value).format('YYYY'))
+    },
+    {
+      title: '更新时间',
+      dataIndex: 'update_time',
+      hideInForm: true,
+      valueType: 'text',
     },
     {
       title: '操作',
@@ -142,11 +160,11 @@ const TableList: React.FC<unknown> = () => {
   return (
     <PageContainer
       header={{
-        title: 'CRUD 示例',
+        title: '短链列表',
       }}
     >
       <ProTable<API.UserInfo>
-        headerTitle="查询表格"
+        headerTitle="短链查询"
         actionRef={actionRef}
         rowKey="id"
         search={{
@@ -162,16 +180,21 @@ const TableList: React.FC<unknown> = () => {
           </Button>,
         ]}
         request={async (params, sorter, filter) => {
-          const { data, success } = await queryUserList({
-            ...params,
+          const pageParams = {
+            page_num: params?.current,
+            page_size: params?.pageSize,
+          };
+          const { data, errno } = await queryShortUrlList({
+            ...pageParams,
             // FIXME: remove @ts-ignore
             // @ts-ignore
+            user_id: 0,
             sorter,
             filter,
           });
           return {
-            data: data?.list || [],
-            success,
+            data: data?.url_list || [],
+            success: errno === 0,
           };
         }}
         columns={columns}

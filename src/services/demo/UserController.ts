@@ -2,8 +2,19 @@
 // 该文件由 OneAPI 自动生成，请勿手动修改！
 import { request } from '@umijs/max';
 
-/** 此处后端没有提供注释 GET /api/v1/queryUserList */
-export async function queryUserList(
+/** 短链列表 POST /v1/api/admin/url/get */
+// type Url struct {
+//   Id          uint64 `gorm:"column:id" json:"id"`                     //ID
+//   UserId      uint64 `gorm:"column:user_id" json:"user_id"`           //用户ID
+//   HashKey     string `gorm:"column:hash_key" json:"hash_key"`         //哈希后缀
+//   ShortUrl    string `gorm:"column:short_url" json:"short_url"`       //短链接
+//   OriginalUrl string `gorm:"column:original_url" json:"original_url"` //原链接
+//   Salt        string `gorm:"column:salt" json:"salt"`                 //加密盐
+//   Status      int8   `gorm:"column:status" json:"status"`             //链接状态
+//   CreateTime  int64  `gorm:"column:create_time" json:"create_time"`   //创建时间
+//   UpdateTime  int64  `gorm:"column:update_time" json:"update_time"`   //更新时间
+//  }
+export async function queryShortUrlList(
   params: {
     // query
     /** keyword */
@@ -15,8 +26,8 @@ export async function queryUserList(
   },
   options?: { [key: string]: any },
 ) {
-  return request<API.Result_PageInfo_UserInfo__>('/api/v1/queryUserList', {
-    method: 'GET',
+  return request<API.Result_PageInfo_UserInfo__>('/v1/api/admin/url/get', {
+    method: 'POST',
     params: {
       ...params,
     },
@@ -24,12 +35,28 @@ export async function queryUserList(
   });
 }
 
-/** 此处后端没有提供注释 POST /api/v1/user */
-export async function addUser(
-  body?: API.UserInfoVO,
+/** 修改页面 schema
+ * https://admin.luckmarket.cn
+ */
+export async function createPage(
+  body?: API.PageInfoVO,
   options?: { [key: string]: any },
 ) {
-  return request<API.Result_UserInfo_>('/api/v1/user', {
+  return request<API.Result_UserInfo_>('/v1/api/admin/page/create', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+/** 获取页面 schema */
+export async function getPage(
+  body?: API.PageInfoVO,
+  options?: { [key: string]: any },
+) {
+  return request<API.Result_UserInfo_>('/v1/api/admin/page/get', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

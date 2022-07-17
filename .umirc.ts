@@ -6,6 +6,8 @@ export default defineConfig({
   model: {},
   initialState: {},
   request: {},
+  hash: true,
+  history: { type: 'hash' },
   layout: {
     title: '@umijs/max',
   },
@@ -25,7 +27,7 @@ export default defineConfig({
       component: './Access',
     },
     {
-      name: ' CRUD 示例',
+      name: ' 短链列表',
       path: '/table',
       component: './Table',
     },
@@ -41,4 +43,11 @@ export default defineConfig({
     },
   ],
   npmClient: 'pnpm',
+  proxy: {
+    '/v1': {
+      target: 'https://admin.luckmarket.cn/',
+      changeOrigin: true,
+      pathRewrite: { '^/v1': '/v1' },
+    },
+  },
 });
